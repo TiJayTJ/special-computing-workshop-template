@@ -27,7 +27,7 @@ public class AtmTests {
   @Test()
   public void incorrectInputTest(){
     InputStream in = new ByteArrayInputStream(("fsf").getBytes());
-    Exception ex = Assertions.assertThrows(NumberFormatException.class, () -> new Atm(in));
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
   }
 
@@ -107,11 +107,63 @@ public class AtmTests {
 
     Assertions.assertEquals(expected, atm.getResult());
   }
-
   @Test
   public void testEmptyAmount(){
-    InputStream in = new ByteArrayInputStream(("\n5").getBytes());
+    InputStream in = new ByteArrayInputStream(("\n2 1").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
+  }
+
+  @Test
+  public void testEmptyDenominations(){
+    InputStream in = new ByteArrayInputStream(("5\n\n").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
+  }
+
+  @Test
+  public void spaceInputTest(){
+    InputStream in = new ByteArrayInputStream(("5\n  \n").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("empty string", ex.getMessage());
+  }
+
+  @Test
+  public void testNegativeAmount(){
+    InputStream in = new ByteArrayInputStream(("-5\n2 1").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("the amount is negative", ex.getMessage());
+  }
+
+  @Test
+  public void testNegativeDenominations(){
+    InputStream in = new ByteArrayInputStream(("5\n-1 1").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("there is not positive denomination", ex.getMessage());
+  }
+
+  @Test
+  public void testZeroDenomination(){
+    InputStream in = new ByteArrayInputStream(("5\n0").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("there is not positive denomination", ex.getMessage());
+  }
+
+  @Test()
+  public void formulaInputTest(){
+    InputStream in = new ByteArrayInputStream(("5\n1+1 3").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
+  }
+
+  @Test()
+  public void duplicateDenominationsTest(){
+    InputStream in = new ByteArrayInputStream(("5\n1 1").getBytes());
+
+    List<List<Long>> expected = new ArrayList<>();
+    expected.add(new ArrayList<>(Arrays.asList(1L, 1L, 1L, 1L, 1L)));
+
     Atm atm = new Atm(in);
-    // TODO: 28.11.2023
+    Assertions.assertEquals(expected, atm.getResult());
   }
 }

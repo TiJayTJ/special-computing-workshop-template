@@ -37,8 +37,10 @@ public class Atm {
       String str = in.nextLine();
       amount = Long.parseLong(str);
       str = in.nextLine();
-      List<Long> input = Arrays.stream(str.split(" ")).map(Long::parseLong).toList();
-
+      List<Long> input = Arrays.stream(str.split(" ")).map(Long::parseLong).distinct().toList();
+      if (input.isEmpty()) {
+        throw new IllegalArgumentException("empty string");
+      }
       IntStream.range(0, input.size()).forEach(i -> denominations.add(input.get(i)));
       denominations.sort(Collections.reverseOrder());
     } catch (NumberFormatException ex) {
@@ -50,7 +52,7 @@ public class Atm {
    * lhwrg.
    *
    * @param denominations ihwrg
-   * @param amount klkhrg
+   * @param amount        klkhrg
    */
   public Atm(List<Long> denominations, long amount) {
     this.denominations = denominations;
@@ -60,13 +62,13 @@ public class Atm {
     logResult();
   }
 
-  private void checkPositivity () {
+  private void checkPositivity() {
     if (amount < 0) {
       throw new IllegalArgumentException("the amount is negative");
     }
-    for (Long denomination: denominations) {
+    for (Long denomination : denominations) {
       if (denomination <= 0) {
-        throw new IllegalArgumentException("the denomination is negative");
+        throw new IllegalArgumentException("there is not positive denomination");
       }
     }
   }
@@ -118,6 +120,7 @@ public class Atm {
   public List<Long> getDenominations() {
     return denominations;
   }
+
   public List<List<Long>> getResult() {
     return result;
   }
