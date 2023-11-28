@@ -6,9 +6,9 @@ package ru.spbu.apcyb.svp.tasks.atm;
 public class Main {
 
   /**
-   * ihqef.
+   * Main class.
    *
-   * @param args oihw
+   * @param args args
    */
   public static void main(String[] args) {
     System.out.println("""

@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 /**
- * wef.
+ * An automaton that calculates all possible options for exchanging this amount for banknotes.
  */
 public class Atm {
 
@@ -19,12 +19,11 @@ public class Atm {
   private final List<List<Long>> result = new ArrayList<>();
 
   /**
-   * wefliihweg.
+   * Constructs ATM which takes information from input stream.
    *
-   * @param inputStream iwjeg
-   * @throws NumberFormatException oihwrgih
+   * @param inputStream input stream
    */
-  public Atm(InputStream inputStream) throws NumberFormatException {
+  public Atm(InputStream inputStream) {
     fillFields(inputStream);
     checkPositivity();
     recursiveSolution(denominations, amount, new ArrayList<>());
@@ -49,10 +48,10 @@ public class Atm {
   }
 
   /**
-   * lhwrg.
+   * Constructs ATM based on list of denomination and target sum.
    *
-   * @param denominations ihwrg
-   * @param amount        klkhrg
+   * @param denominations list of denominations
+   * @param amount        target sum
    */
   public Atm(List<Long> denominations, long amount) {
     this.denominations = denominations;
@@ -63,8 +62,8 @@ public class Atm {
   }
 
   private void checkPositivity() {
-    if (amount < 0) {
-      throw new IllegalArgumentException("the amount is negative");
+    if (amount <= 0) {
+      throw new IllegalArgumentException("the amount is not positive");
     }
     for (Long denomination : denominations) {
       if (denomination <= 0) {
@@ -96,7 +95,7 @@ public class Atm {
   }
 
   /**
-   * kjhqef.
+   * Logging all possible options for exchanging.
    */
   public void logResult() {
     Logger logger = Logger.getLogger(getClass().getName());

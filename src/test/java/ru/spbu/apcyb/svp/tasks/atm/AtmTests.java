@@ -108,14 +108,14 @@ public class AtmTests {
     Assertions.assertEquals(expected, atm.getResult());
   }
   @Test
-  public void testEmptyAmount(){
+  public void emptyAmountTest(){
     InputStream in = new ByteArrayInputStream(("\n2 1").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
   }
 
   @Test
-  public void testEmptyDenominations(){
+  public void emptyDenominationsTest(){
     InputStream in = new ByteArrayInputStream(("5\n\n").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
@@ -129,21 +129,27 @@ public class AtmTests {
   }
 
   @Test
-  public void testNegativeAmount(){
+  public void negativeAmountTest(){
     InputStream in = new ByteArrayInputStream(("-5\n2 1").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
-    Assertions.assertEquals("the amount is negative", ex.getMessage());
+    Assertions.assertEquals("the amount is not positive", ex.getMessage());
   }
 
   @Test
-  public void testNegativeDenominations(){
+  public void negativeDenominationsTest(){
     InputStream in = new ByteArrayInputStream(("5\n-1 1").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("there is not positive denomination", ex.getMessage());
   }
 
   @Test
-  public void testZeroDenomination(){
+  public void zeroAmountTest(){
+    InputStream in = new ByteArrayInputStream(("0\n2 1").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("the amount is not positive", ex.getMessage());
+  }
+  @Test
+  public void zeroDenominationTest(){
     InputStream in = new ByteArrayInputStream(("5\n0").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("there is not positive denomination", ex.getMessage());
