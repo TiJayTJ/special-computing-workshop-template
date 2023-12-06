@@ -1,13 +1,16 @@
 package ru.spbu.apcyb.svp.tasks.atm;
 
 import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+
 
 /**
  * An automaton that calculates all possible options for exchanging this amount for banknotes.
@@ -16,7 +19,6 @@ public class Atm {
 
   private long amount;
   private List<Long> denominations = new ArrayList<>();
-  private final List<List<Long>> result = new ArrayList<>();
 
   /**
    * Constructs ATM which takes information from input stream.
@@ -25,25 +27,28 @@ public class Atm {
    */
   public Atm(InputStream inputStream) {
     fillFields(inputStream);
-    checkPositivity();
-    recursiveSolution(denominations, amount, new ArrayList<>());
-    logResult();
   }
+
 
   private void fillFields(InputStream inputStream) {
     Scanner in = new Scanner(inputStream);
+    String str;
     try {
-      String str = in.nextLine();
-      amount = Long.parseLong(str);
+      str = in.nextLine();
+      this.amount = Long.parseLong(str);
+    } catch (NumberFormatException ex) {
+      throw new IllegalArgumentException("amount cannot be parsed to long");
+    }
+    try {
       str = in.nextLine();
       List<Long> input = Arrays.stream(str.split(" ")).map(Long::parseLong).distinct().toList();
       if (input.isEmpty()) {
         throw new IllegalArgumentException("empty string");
       }
-      IntStream.range(0, input.size()).forEach(i -> denominations.add(input.get(i)));
-      denominations.sort(Collections.reverseOrder());
+      IntStream.range(0, input.size()).forEach(i -> this.denominations.add(input.get(i)));
+      this.denominations.sort(Collections.reverseOrder());
     } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException("string can't be parsed to long");
+      throw new IllegalArgumentException("denominations cannot be parsed to long");
     }
   }
 
@@ -56,12 +61,17 @@ public class Atm {
   public Atm(List<Long> denominations, long amount) {
     this.denominations = denominations;
     this.amount = amount;
-    checkPositivity();
-    recursiveSolution(denominations, amount, new ArrayList<>());
-    logResult();
   }
 
-  private void checkPositivity() {
+  public List<List<Long>> run() {
+    checkPositivity();
+    return recursiveSolution();
+  }
+
+  /**
+   * checking for the positivity of the amount and denominations.
+   */
+  public void checkPositivity() {
     if (amount <= 0) {
       throw new IllegalArgumentException("the amount is not positive");
     }
@@ -72,32 +82,42 @@ public class Atm {
     }
   }
 
-  private void recursiveSolution(List<Long> denominations, long amount, List<Long> combinations) {
-    long s = combinations.stream().mapToLong(i -> i).sum();
+  private List<List<Long>> recursiveSolution() {
+    List<Long> combination = new ArrayList<>();
+    List<List<Long>> result = new ArrayList<>();
 
-    if (s == amount) {
-      result.add(combinations);
-    }
-    if (s >= amount) {
-      return;
-    }
-    for (int i = 0; i < denominations.size(); i++) {
-      ArrayList<Long> remaining = new ArrayList<>();
-      long n = denominations.get(i);
-      for (int j = i; j < denominations.size(); j++) {
-        remaining.add(denominations.get(j));
+    Deque<StackData> todoStack = new ArrayDeque<>();
+    todoStack.push(new StackData(denominations, combination));
+
+    while (!todoStack.isEmpty()) {
+
+      StackData current = todoStack.pop();
+
+      long s = current.intermediate.stream().mapToLong(i -> i).sum();
+      if (s == amount) {
+        result.add(current.intermediate);
       }
-      List<Long> partialRec = new ArrayList<>(combinations);
-      partialRec.add(n);
+      if (s < amount) {
+        for (int i = 0; i < current.denominations.size(); i++) {
+          ArrayList<Long> remaining = new ArrayList<>();
+          long n = current.denominations.get(i);
+          for (int j = i; j < current.denominations.size(); j++) {
+            remaining.add(current.denominations.get(j));
+          }
+          List<Long> partialRec = new ArrayList<>(current.intermediate);
+          partialRec.add(n);
 
-      recursiveSolution(remaining, amount, partialRec);
+          todoStack.push(new StackData(remaining, partialRec));
+        }
+      }
     }
+    return result;
   }
 
   /**
    * Logging all possible options for exchanging.
    */
-  public void logResult() {
+  public void logResult(List<List<Long>> result) {
     Logger logger = Logger.getLogger(getClass().getName());
     StringBuilder bld = new StringBuilder();
 
@@ -112,15 +132,7 @@ public class Atm {
     logger.info(str);
   }
 
-  public long getAmount() {
-    return amount;
-  }
+  private record StackData(List<Long> denominations, List<Long> intermediate) {
 
-  public List<Long> getDenominations() {
-    return denominations;
-  }
-
-  public List<List<Long>> getResult() {
-    return result;
   }
 }

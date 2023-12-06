@@ -1,12 +1,12 @@
 package ru.spbu.apcyb.svp.tasks.atm;
 
 /**
- * ouihqewf.
+ * Launches atm with the ability to enter from the console
  */
 public class Main {
 
   /**
-   * Main class.
+   * Main method
    *
    * @param args args
    */

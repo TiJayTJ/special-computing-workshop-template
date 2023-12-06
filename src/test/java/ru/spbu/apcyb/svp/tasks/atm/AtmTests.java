@@ -11,64 +11,60 @@ import org.junit.jupiter.api.Assertions;
 public class AtmTests {
 
   @Test
-  public void simpleTest(){
+  public void simpleTest() {
     List<Long> denominations = new ArrayList<>(Arrays.asList(2L, 1L));
     int amount = 4;
 
     List<List<Long>> expected = new ArrayList<>();
-    expected.add(new ArrayList<>(Arrays.asList(2L, 2L)));
-    expected.add(new ArrayList<>(Arrays.asList(2L, 1L, 1L)));
     expected.add(new ArrayList<>(Arrays.asList(1L, 1L, 1L, 1L)));
+    expected.add(new ArrayList<>(Arrays.asList(2L, 1L, 1L)));
+    expected.add(new ArrayList<>(Arrays.asList(2L, 2L)));
 
     Atm atm = new Atm(denominations, amount);
-    Assertions.assertEquals(expected, atm.getResult());
-  }
-
-  @Test()
-  public void incorrectInputTest(){
-    InputStream in = new ByteArrayInputStream(("fsf").getBytes());
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
-    Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
+    List<List<Long>> result = atm.run();
+    atm.logResult(result);
+    Assertions.assertEquals(expected, result);
   }
 
   @Test
-  public void example1Test(){
+  public void example1Test() {
     InputStream in = new ByteArrayInputStream(("5\n3 2").getBytes());
     Atm atm = new Atm(in);
 
     List<List<Long>> expected = new ArrayList<>();
     expected.add(new ArrayList<>(Arrays.asList(3L, 2L)));
 
-    Assertions.assertEquals(expected, atm.getResult());
+    Assertions.assertEquals(expected, atm.run());
   }
 
   @Test
-  public void example2Test(){
+  public void example2Test() {
     InputStream in = new ByteArrayInputStream(("4\n2 1").getBytes());
     Atm atm = new Atm(in);
 
     List<List<Long>> expected = new ArrayList<>();
-    expected.add(new ArrayList<>(Arrays.asList(2L, 2L)));
-    expected.add(new ArrayList<>(Arrays.asList(2L, 1L, 1L)));
     expected.add(new ArrayList<>(Arrays.asList(1L, 1L, 1L, 1L)));
+    expected.add(new ArrayList<>(Arrays.asList(2L, 1L, 1L)));
+    expected.add(new ArrayList<>(Arrays.asList(2L, 2L)));
 
-    Assertions.assertEquals(expected, atm.getResult());
+    Assertions.assertEquals(expected, atm.run());
   }
 
   @Test
-  public void example3Test(){
+  public void example3Test() {
     InputStream in = new ByteArrayInputStream(("4\n1 2").getBytes());
     Atm atm = new Atm(in);
 
     List<List<Long>> expected = new ArrayList<>();
-    expected.add(new ArrayList<>(Arrays.asList(2L, 2L)));
-    expected.add(new ArrayList<>(Arrays.asList(2L, 1L, 1L)));
     expected.add(new ArrayList<>(Arrays.asList(1L, 1L, 1L, 1L)));
+    expected.add(new ArrayList<>(Arrays.asList(2L, 1L, 1L)));
+    expected.add(new ArrayList<>(Arrays.asList(2L, 2L)));
 
-    Assertions.assertEquals(expected, atm.getResult());
+    Assertions.assertEquals(expected, atm.run());
   }
+
   @Test
-  public void example4Test(){
+  public void example4Test() {
     InputStream in = new ByteArrayInputStream(("1000\n1").getBytes());
     Atm atm = new Atm(in);
 
@@ -79,11 +75,11 @@ public class AtmTests {
     List<List<Long>> expected = new ArrayList<>();
     expected.add(trueResult);
 
-    Assertions.assertEquals(expected, atm.getResult());
+    Assertions.assertEquals(expected, atm.run());
   }
 
   @Test
-  public void example5Test(){
+  public void example5Test() {
     InputStream in = new ByteArrayInputStream(("1000\n500 1").getBytes());
     Atm atm = new Atm(in);
 
@@ -101,75 +97,88 @@ public class AtmTests {
     }
 
     List<List<Long>> expected = new ArrayList<>();
-    expected.add(trueResult1);
-    expected.add(trueResult2);
     expected.add(trueResult3);
+    expected.add(trueResult2);
+    expected.add(trueResult1);
 
-    Assertions.assertEquals(expected, atm.getResult());
+    Assertions.assertEquals(expected, atm.run());
   }
+
   @Test
-  public void emptyAmountTest(){
+  public void incorrectInputTest() {
+    InputStream in = new ByteArrayInputStream(("fsf").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("amount cannot be parsed to long", ex.getMessage());
+  }
+
+  @Test
+  public void emptyAmountTest() {
     InputStream in = new ByteArrayInputStream(("\n2 1").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
-    Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
+    Assertions.assertEquals("amount cannot be parsed to long", ex.getMessage());
   }
 
   @Test
-  public void emptyDenominationsTest(){
+  public void emptyDenominationsTest() {
     InputStream in = new ByteArrayInputStream(("5\n\n").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
-    Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
+    Assertions.assertEquals("denominations cannot be parsed to long", ex.getMessage());
   }
 
   @Test
-  public void spaceInputTest(){
+  public void spaceInputTest() {
     InputStream in = new ByteArrayInputStream(("5\n  \n").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("empty string", ex.getMessage());
   }
 
   @Test
-  public void negativeAmountTest(){
+  public void negativeAmountTest() {
     InputStream in = new ByteArrayInputStream(("-5\n2 1").getBytes());
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Atm atm = new Atm(in);
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, atm::checkPositivity);
     Assertions.assertEquals("the amount is not positive", ex.getMessage());
   }
 
   @Test
-  public void negativeDenominationsTest(){
+  public void negativeDenominationsTest() {
     InputStream in = new ByteArrayInputStream(("5\n-1 1").getBytes());
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Atm atm = new Atm(in);
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, atm::checkPositivity);
     Assertions.assertEquals("there is not positive denomination", ex.getMessage());
   }
 
   @Test
-  public void zeroAmountTest(){
+  public void zeroAmountTest() {
     InputStream in = new ByteArrayInputStream(("0\n2 1").getBytes());
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Atm atm = new Atm(in);
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, atm::checkPositivity);
     Assertions.assertEquals("the amount is not positive", ex.getMessage());
   }
+
   @Test
-  public void zeroDenominationTest(){
+  public void zeroDenominationTest() {
     InputStream in = new ByteArrayInputStream(("5\n0").getBytes());
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Atm atm = new Atm(in);
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, atm::checkPositivity);
     Assertions.assertEquals("there is not positive denomination", ex.getMessage());
   }
 
   @Test()
-  public void formulaInputTest(){
+  public void formulaInputTest() {
     InputStream in = new ByteArrayInputStream(("5\n1+1 3").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
-    Assertions.assertEquals("string can't be parsed to long", ex.getMessage());
+    Assertions.assertEquals("denominations cannot be parsed to long", ex.getMessage());
   }
 
   @Test()
-  public void duplicateDenominationsTest(){
+  public void duplicateDenominationsTest() {
     InputStream in = new ByteArrayInputStream(("5\n1 1").getBytes());
 
     List<List<Long>> expected = new ArrayList<>();
     expected.add(new ArrayList<>(Arrays.asList(1L, 1L, 1L, 1L, 1L)));
 
     Atm atm = new Atm(in);
-    Assertions.assertEquals(expected, atm.getResult());
+    Assertions.assertEquals(expected, atm.run());
   }
 }
