@@ -17,8 +17,8 @@ import java.util.stream.IntStream;
  */
 public class Atm {
 
-  private long amount;
-  private List<Long> denominations = new ArrayList<>();
+  private final long amount;
+  private final List<Long> denominations = new ArrayList<>();
 
   /**
    * Constructs ATM which takes information from input stream.
@@ -26,11 +26,6 @@ public class Atm {
    * @param inputStream input stream
    */
   public Atm(InputStream inputStream) {
-    fillFields(inputStream);
-  }
-
-
-  private void fillFields(InputStream inputStream) {
     Scanner in = new Scanner(inputStream);
     String str;
     try {
@@ -59,7 +54,7 @@ public class Atm {
    * @param amount        target sum
    */
   public Atm(List<Long> denominations, long amount) {
-    this.denominations = denominations;
+    this.denominations.addAll(denominations);
     this.amount = amount;
   }
 
