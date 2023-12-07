@@ -21,7 +21,7 @@ public class AtmTests {
     expected.add(new ArrayList<>(Arrays.asList(2L, 2L)));
 
     Atm atm = new Atm(denominations, amount);
-    List<List<Long>> result = atm.run();
+    List<List<Long>> result = atm.iterativeSolution();
     atm.logResult(result);
     Assertions.assertEquals(expected, result);
   }
@@ -34,7 +34,7 @@ public class AtmTests {
     List<List<Long>> expected = new ArrayList<>();
     expected.add(new ArrayList<>(Arrays.asList(3L, 2L)));
 
-    Assertions.assertEquals(expected, atm.run());
+    Assertions.assertEquals(expected, atm.iterativeSolution());
   }
 
   @Test
@@ -47,7 +47,7 @@ public class AtmTests {
     expected.add(new ArrayList<>(Arrays.asList(2L, 1L, 1L)));
     expected.add(new ArrayList<>(Arrays.asList(2L, 2L)));
 
-    Assertions.assertEquals(expected, atm.run());
+    Assertions.assertEquals(expected, atm.iterativeSolution());
   }
 
   @Test
@@ -60,7 +60,7 @@ public class AtmTests {
     expected.add(new ArrayList<>(Arrays.asList(2L, 1L, 1L)));
     expected.add(new ArrayList<>(Arrays.asList(2L, 2L)));
 
-    Assertions.assertEquals(expected, atm.run());
+    Assertions.assertEquals(expected, atm.iterativeSolution());
   }
 
   @Test
@@ -75,7 +75,7 @@ public class AtmTests {
     List<List<Long>> expected = new ArrayList<>();
     expected.add(trueResult);
 
-    Assertions.assertEquals(expected, atm.run());
+    Assertions.assertEquals(expected, atm.iterativeSolution());
   }
 
   @Test
@@ -101,7 +101,7 @@ public class AtmTests {
     expected.add(trueResult2);
     expected.add(trueResult1);
 
-    Assertions.assertEquals(expected, atm.run());
+    Assertions.assertEquals(expected, atm.iterativeSolution());
   }
 
   @Test
@@ -135,32 +135,28 @@ public class AtmTests {
   @Test
   public void negativeAmountTest() {
     InputStream in = new ByteArrayInputStream(("-5\n2 1").getBytes());
-    Atm atm = new Atm(in);
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, atm::checkPositivity);
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("the amount is not positive", ex.getMessage());
   }
 
   @Test
   public void negativeDenominationsTest() {
     InputStream in = new ByteArrayInputStream(("5\n-1 1").getBytes());
-    Atm atm = new Atm(in);
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, atm::checkPositivity);
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("there is not positive denomination", ex.getMessage());
   }
 
   @Test
   public void zeroAmountTest() {
     InputStream in = new ByteArrayInputStream(("0\n2 1").getBytes());
-    Atm atm = new Atm(in);
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, atm::checkPositivity);
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("the amount is not positive", ex.getMessage());
   }
 
   @Test
   public void zeroDenominationTest() {
     InputStream in = new ByteArrayInputStream(("5\n0").getBytes());
-    Atm atm = new Atm(in);
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, atm::checkPositivity);
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("there is not positive denomination", ex.getMessage());
   }
 
@@ -179,6 +175,6 @@ public class AtmTests {
     expected.add(new ArrayList<>(Arrays.asList(1L, 1L, 1L, 1L, 1L)));
 
     Atm atm = new Atm(in);
-    Assertions.assertEquals(expected, atm.run());
+    Assertions.assertEquals(expected, atm.iterativeSolution());
   }
 }
