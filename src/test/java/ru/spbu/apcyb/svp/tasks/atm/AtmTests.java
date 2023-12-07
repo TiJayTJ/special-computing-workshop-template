@@ -140,17 +140,17 @@ public class AtmTests {
   }
 
   @Test
-  public void negativeDenominationsTest() {
-    InputStream in = new ByteArrayInputStream(("5\n-1 1").getBytes());
-    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
-    Assertions.assertEquals("there is not positive denomination", ex.getMessage());
-  }
-
-  @Test
   public void zeroAmountTest() {
     InputStream in = new ByteArrayInputStream(("0\n2 1").getBytes());
     Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
     Assertions.assertEquals("the amount is not positive", ex.getMessage());
+  }
+
+  @Test
+  public void negativeDenominationsTest() {
+    InputStream in = new ByteArrayInputStream(("5\n-1 1").getBytes());
+    Exception ex = Assertions.assertThrows(IllegalArgumentException.class, () -> new Atm(in));
+    Assertions.assertEquals("there is not positive denomination", ex.getMessage());
   }
 
   @Test
