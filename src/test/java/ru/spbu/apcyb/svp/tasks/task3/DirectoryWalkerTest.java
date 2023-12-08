@@ -52,7 +52,7 @@ public class DirectoryWalkerTest {
     try (FileWriter writer = new FileWriter(expectedFile.toFile())) {
       writer.write(expected);
     } catch (IOException e) {
-      throw new IOException("Возникла ошибка во время записи, проверьте данные.");
+      throw new IOException("An error occurred during recording, check the data");
     }
     Assertions.assertEquals(-1, Files.mismatch(expectedFile, resultFile));
   }

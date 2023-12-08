@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * The DirectoryWalker class is responsible for scanning a given directory and
- * writing the list of file names in that directory to a specified file.
+ * The DirectoryWalker class is responsible for scanning a given directory and writing the list of
+ * file names in that directory to a specified file.
  */
 public class DirectoryWalker {
 
@@ -22,8 +22,8 @@ public class DirectoryWalker {
    *
    * @param directory The path of the directory to be scanned.
    * @param file      The path of the file where the list of file names will be written.
-   * @throws IllegalArgumentException If the provided directory is not a directory or
-   *                                  if the provided file is a directory.
+   * @throws IllegalArgumentException If the provided directory is not a directory or if the
+   *                                  provided file is a directory.
    */
   public DirectoryWalker(Path directory, Path file) {
     if (!Files.isDirectory(directory)) {
