@@ -77,7 +77,7 @@ public class TangentCalculator {
     try (BufferedReader reader = new BufferedReader(new FileReader(inputFile.toFile()))) {
       String line = reader.readLine();
       while (line != null) {
-        String[] lineSplit = line.replace(",", ".").split(" ");
+        String[] lineSplit = line.split(" ");
         for (String numb : lineSplit) {
           numbers.add(Double.parseDouble(numb));
         }
@@ -112,12 +112,12 @@ public class TangentCalculator {
    * Generates a list of random numbers and writes them to a specified output file.
    *
    * @param outputFile The path to the output file.
-   * @param count      The number of random numbers to generate.
+   * @param range      The number of random numbers to generate.
    */
-  public static void numbersGenerator(Path outputFile, int count) {
+  public static void numbersGenerator(Path outputFile, int range) {
     List<Double> numbers = new ArrayList<>();
-    for (int i = 0; i < count; i++) {
-      numbers.add(Math.random() * count - count / 2d);
+    for (int i = 0; i < range; i++) {
+      numbers.add(Math.random() * range * 2 - range);
     }
     output(outputFile, numbers);
   }
